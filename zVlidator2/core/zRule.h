@@ -14,7 +14,7 @@
 @property (nonatomic, weak) zComplexRule * _Nullable parent;
 @property (nonatomic, copy) NSString * _Nullable name;
 
--(BOOL)verify:(_Nullable id)data;
+-(BOOL)validate:(_Nullable id)data;
 @end
 
 

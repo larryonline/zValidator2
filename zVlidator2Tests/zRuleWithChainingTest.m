@@ -37,7 +37,7 @@
     });
     
     NSLog(@"\n%@", [rule debugDescription]);
-    NSAssert([rule verify:@"11111"], @"should not be NO");
+    NSAssert([rule validate:@"11111"], @"should not be NO");
 }
 
 - (void)testRuleChaining2{
@@ -50,14 +50,14 @@
     
     NSAssert(rule != originRule, @"after \"is\" method get called. the rule should not be same as originRule");
     
-    NSAssert([rule verify:@1], @"should not be NO");
+    NSAssert([rule validate:@1], @"should not be NO");
     
     rule = originRule.not(^BOOL(id data){
         return nil != data;
     });
     NSAssert(rule != originRule, @"after \"not\" method get called. the rule should not be same as originRule");
     
-    NSAssert([rule verify:nil], @"should not be NO");
+    NSAssert([rule validate:nil], @"should not be NO");
     
     
     originRule = [zRuleWithComparator new];
@@ -66,7 +66,7 @@
     });
     
     NSAssert(rule == originRule, @"after \"is\" get called. the rule should be same as originRule");
-    NSAssert([rule verify:@1], @"should not be NO");
+    NSAssert([rule validate:@1], @"should not be NO");
     
     originRule = [zRuleWithComparator new];
     rule = originRule.not(^BOOL(id data){
@@ -74,7 +74,7 @@
     });
     
     NSAssert(rule == originRule, @"after \"not\" get called. the rule should be same as originRule");
-    NSAssert([rule verify:nil], @"should not be NO");
+    NSAssert([rule validate:nil], @"should not be NO");
     
     
     zRule *and = [zRuleAND new].is(^BOOL(id data){
@@ -83,8 +83,8 @@
         return [data length] > 5;
     });
     
-    NSAssert([and verify:@"111"], @"should not be NO");
-    NSAssert(![and verify:@"111111"], @"should not be YES");
+    NSAssert([and validate:@"111"], @"should not be NO");
+    NSAssert(![and validate:@"111111"], @"should not be YES");
 }
 
 @end

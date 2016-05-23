@@ -29,8 +29,8 @@
     zRule *rule = [zRule new];
     
     @try {
-        [rule verify:nil];
-        [NSException raise:@"UNACCEPTABLE" format:@"CODE SHOULD NOT GO HERE, BECAUSE VERIFY WITH NIL COMPARATOR WILL RAISE AN EXCEPTION"];
+        [rule validate:nil];
+        [NSException raise:@"UNACCEPTABLE" format:@"CODE SHOULD NOT GO HERE, BECAUSE VALIDATE WITH NIL COMPARATOR WILL RAISE AN EXCEPTION"];
     } @catch (NSException *exception) {
         NSAssert(![@"UNACCEPTABLE" isEqualToString:[exception name]], @"%@", exception);
     }
@@ -82,14 +82,14 @@
         return nil != data;
     }];
     
-    NSAssert([rule verify:@1], @"should not be NO");
-    NSAssert(![rule verify:nil], @"should not be YES");
+    NSAssert([rule validate:@1], @"should not be NO");
+    NSAssert(![rule validate:nil], @"should not be YES");
     
     
     rule = [[zRuleWithComparator alloc] initWithComparator:nil];
     @try {
-        [rule verify:@2];
-        [NSException raise:@"UNACCEPTABLE" format:@"CODE SHOULD NOT GO HERE, BECAUSE VERIFY WITH NIL COMPARATOR WILL RAISE AN EXCEPTION"];
+        [rule validate:@2];
+        [NSException raise:@"UNACCEPTABLE" format:@"CODE SHOULD NOT GO HERE, BECAUSE VALIDATE WITH NIL COMPARATOR WILL RAISE AN EXCEPTION"];
     } @catch (NSException *exception) {
         NSAssert(![@"UNACCEPTABLE" isEqualToString:[exception name]], @"%@", exception);
     }
@@ -103,7 +103,7 @@
     
     @try {
         [rule addRule:rule];
-        [NSException raise:@"UNACCEPTABLE" format:@"CODE SHOULD NOT GO HERE, BECAUSE VERIFY WITH NIL COMPARATOR WILL RAISE AN EXCEPTION"];
+        [NSException raise:@"UNACCEPTABLE" format:@"CODE SHOULD NOT GO HERE, BECAUSE VALIDATE WITH NIL COMPARATOR WILL RAISE AN EXCEPTION"];
     } @catch (NSException *exception) {
         NSAssert(![@"UNACCEPTABLE" isEqualToString:[exception name]], @"%@", exception);
     }
@@ -152,15 +152,15 @@
     
     zRuleAND *and = [[zRuleAND alloc] initWithChildren:nil];
     @try {
-        [and verify:@111];
-        [NSException raise:@"UNACCEPTABLE" format:@"CODE SHOULD NOT GO HERE, BECAUSE VERIFY WITH NIL COMPARATOR WILL RAISE AN EXCEPTION"];
+        [and validate:@111];
+        [NSException raise:@"UNACCEPTABLE" format:@"CODE SHOULD NOT GO HERE, BECAUSE VALIDATE WITH NIL COMPARATOR WILL RAISE AN EXCEPTION"];
     } @catch (NSException *exception) {
         NSAssert(![@"UNACCEPTABLE" isEqualToString:[exception name]], @"%@", exception);
     }
     
     @try {
         and = [zRuleAND ruleWithChildRule:nil andChildRule:nil];
-        [NSException raise:@"UNACCEPTABLE" format:@"CODE SHOULD NOT GO HERE, BECAUSE VERIFY WITH NIL COMPARATOR WILL RAISE AN EXCEPTION"];
+        [NSException raise:@"UNACCEPTABLE" format:@"CODE SHOULD NOT GO HERE, BECAUSE VALIDATE WITH NIL COMPARATOR WILL RAISE AN EXCEPTION"];
     } @catch (NSException *exception) {
         NSAssert(![@"UNACCEPTABLE" isEqualToString:[exception name]], @"%@", exception);
     }
@@ -176,22 +176,22 @@
     
     
     and = [zRuleAND ruleWithChildRule:isNSString andChildRule:isEqualInteger111];
-    NSAssert([and verify:@"111"], @"should be yes");
-    NSAssert(![and verify:@111], @"should be no");
+    NSAssert([and validate:@"111"], @"should be yes");
+    NSAssert(![and validate:@111], @"should be no");
 }
 
 - (void)testRuleOR{
     zRuleOR *or = [[zRuleOR alloc] initWithChildren:nil];
     @try {
-        [or verify:@111];
-        [NSException raise:@"UNACCEPTABLE" format:@"CODE SHOULD NOT GO HERE, BECAUSE VERIFY WITH NIL COMPARATOR WILL RAISE AN EXCEPTION"];
+        [or validate:@111];
+        [NSException raise:@"UNACCEPTABLE" format:@"CODE SHOULD NOT GO HERE, BECAUSE VALIDATE WITH NIL COMPARATOR WILL RAISE AN EXCEPTION"];
     } @catch (NSException *exception) {
         NSAssert(![@"UNACCEPTABLE" isEqualToString:[exception name]], @"%@", exception);
     }
     
     @try {
         or = [zRuleOR ruleWithChildRule:nil orChildRule:nil];
-        [NSException raise:@"UNACCEPTABLE" format:@"CODE SHOULD NOT GO HERE, BECAUSE VERIFY WITH NIL COMPARATOR WILL RAISE AN EXCEPTION"];
+        [NSException raise:@"UNACCEPTABLE" format:@"CODE SHOULD NOT GO HERE, BECAUSE VALIDATE WITH NIL COMPARATOR WILL RAISE AN EXCEPTION"];
     } @catch (NSException *exception) {
         NSAssert(![@"UNACCEPTABLE" isEqualToString:[exception name]], @"%@", exception);
     }
@@ -205,9 +205,9 @@
     }];
     
     or = [zRuleOR ruleWithChildRule:isNSString orChildRule:isEqualInteger111];
-    NSAssert([or verify:@"111"], @"should be yes");
-    NSAssert([or verify:@111], @"should be yes");
-    NSAssert(![or verify:@222], @"should be no");
+    NSAssert([or validate:@"111"], @"should be yes");
+    NSAssert([or validate:@111], @"should be yes");
+    NSAssert(![or validate:@222], @"should be no");
 }
 
 - (void)testRuleCombination{
@@ -223,33 +223,33 @@
     zRule *rule = nil;
     @try {
         rule = [isNSString andWithRule:nil];
-        [NSException raise:@"UNACCEPTABLE" format:@"CODE SHOULD NOT GO HERE, BECAUSE VERIFY WITH NIL COMPARATOR WILL RAISE AN EXCEPTION"];
+        [NSException raise:@"UNACCEPTABLE" format:@"CODE SHOULD NOT GO HERE, BECAUSE VALIDATE WITH NIL COMPARATOR WILL RAISE AN EXCEPTION"];
     } @catch (NSException *exception) {
         NSAssert(![@"UNACCEPTABLE" isEqualToString:[exception name]], @"%@", exception);
     }
     
     @try {
         rule = [isNSString orWithRule:nil];
-        [NSException raise:@"UNACCEPTABLE" format:@"CODE SHOULD NOT GO HERE, BECAUSE VERIFY WITH NIL COMPARATOR WILL RAISE AN EXCEPTION"];
+        [NSException raise:@"UNACCEPTABLE" format:@"CODE SHOULD NOT GO HERE, BECAUSE VALIDATE WITH NIL COMPARATOR WILL RAISE AN EXCEPTION"];
     } @catch (NSException *exception) {
         NSAssert(![@"UNACCEPTABLE" isEqualToString:[exception name]], @"%@", exception);
     }
     
     
     rule = [isNSString andWithRule:isEqualInteger111];
-    NSAssert([rule verify:@"111"], @"should be yes");
-    NSAssert(![rule verify:@111], @"should be no");
+    NSAssert([rule validate:@"111"], @"should be yes");
+    NSAssert(![rule validate:@111], @"should be no");
     
     rule = [isNSString orWithRule:isEqualInteger111];
-    NSAssert([rule verify:@"111"], @"should be yes");
-    NSAssert([rule verify:@111], @"should be yes");
-    NSAssert(![rule verify:@222], @"should be no");
+    NSAssert([rule validate:@"111"], @"should be yes");
+    NSAssert([rule validate:@111], @"should be yes");
+    NSAssert(![rule validate:@222], @"should be no");
     
     zRuleAND *and = [zRuleAND new];
     @try{
         
         [and andWithRule:nil];
-        [NSException raise:@"UNACCEPTABLE" format:@"CODE SHOULD NOT GO HERE, BECAUSE VERIFY WITH NIL COMPARATOR WILL RAISE AN EXCEPTION"];
+        [NSException raise:@"UNACCEPTABLE" format:@"CODE SHOULD NOT GO HERE, BECAUSE VALIDATE WITH NIL COMPARATOR WILL RAISE AN EXCEPTION"];
     } @catch (NSException *exception) {
         NSAssert(![@"UNACCEPTABLE" isEqualToString:[exception name]], @"%@", exception);
     }
@@ -261,7 +261,7 @@
     @try{
         
         [or orWithRule:nil];
-        [NSException raise:@"UNACCEPTABLE" format:@"CODE SHOULD NOT GO HERE, BECAUSE VERIFY WITH NIL COMPARATOR WILL RAISE AN EXCEPTION"];
+        [NSException raise:@"UNACCEPTABLE" format:@"CODE SHOULD NOT GO HERE, BECAUSE VALIDATE WITH NIL COMPARATOR WILL RAISE AN EXCEPTION"];
     } @catch (NSException *exception) {
         NSAssert(![@"UNACCEPTABLE" isEqualToString:[exception name]], @"%@", exception);
     }

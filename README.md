@@ -15,7 +15,7 @@ zRule *rule = [zRuleWithComparator ruleWithComparator:^BOOL(id data){
   return [data isKindOfClass:[NSString class]] && [@"i am the correct string" isEqualToString:data];
 }]
 
-if([rule verify:@"random string"]){
+if([rule validate:@"random string"]){
     // we cool ;p
 }else{
     // something happened.
@@ -32,9 +32,9 @@ if([rule verify:@"random string"]){
     return [data length] < 5;
   });
 
-  NSAssert([rule verify:@"abcd"], @"oh shit".);     // we cool here ;p
-  NSAssert([rule verify:@"abc"], @"oh shit.");      // oh shit.
-  NSAssert([rule verify:@"abcde"], @"oh shit.");    // oh shit.
+  NSAssert([rule validate:@"abcd"], @"oh shit".);     // we cool here ;p
+  NSAssert([rule validate:@"abc"], @"oh shit.");      // oh shit.
+  NSAssert([rule validate:@"abcde"], @"oh shit.");    // oh shit.
 ```
   
 

@@ -38,8 +38,8 @@
     return [self initWithUuid:[[self class] makeUUID]];
 }
 
--(BOOL)verify:(id)data{
-    [NSException raise:@"DEFAULT IMPLEMENTATION, SUBCLASS SHOULD OVERRIDE THIS METHOD." format:@"zRule is an ABSTRACT class, you should not use it directly, please extend it and override it's -(BOOL)verify:(id)data method."];
+-(BOOL)validate:(id)data{
+    [NSException raise:@"DEFAULT IMPLEMENTATION, SUBCLASS SHOULD OVERRIDE THIS METHOD." format:@"zRule is an ABSTRACT class, you should not use it directly, please extend it and override it's -(BOOL)validate:(id)data method."];
     return NO;
 }
 
@@ -81,7 +81,7 @@
     return self;
 }
 
--(BOOL)verify:(id)data{
+-(BOOL)validate:(id)data{
     if(nil == self.comparator){
         [NSException raise:@"NO COMPARATOR EXIST" format:@"%@ | The rule comparator is nil, Are you sure you need this rule?", self];
     }
@@ -244,13 +244,13 @@
 @end
 
 @implementation zRuleAND
--(BOOL)verify:(id)data{
+-(BOOL)validate:(id)data{
     if(nil == self.children){
         [NSException raise:@"NO CHILDREN IN COMPLEX RULE" format:@"The children list is nil, Are you sure you need this rule?"];
     }
     BOOL ret = YES;
     for(zRule *rule in self.children){
-        ret = ret && [rule verify:data];
+        ret = ret && [rule validate:data];
         if(NO == ret){
             break;
         }
@@ -269,14 +269,14 @@
 @end
 
 @implementation zRuleOR
--(BOOL)verify:(id)data{
+-(BOOL)validate:(id)data{
     if(nil == self.children){
         [NSException raise:@"GIVEN NO CHILDREN IN COMPLEX RULE" format:@"The children list is nil, Are you sure you need this rule?"];
     }
     
     BOOL ret = NO;
     for(zRule *rule in self.children){
-        ret = ret || [rule verify:data];
+        ret = ret || [rule validate:data];
         if(YES == ret){
             break;
         }
