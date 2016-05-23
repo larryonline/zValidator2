@@ -173,7 +173,7 @@
 @implementation zComplexRule(Mutable)
 -(NSUInteger)addRule:(zRule *)rule{
     if(nil == rule){
-        NSLog(@"CAN NOT ADD [NIL] INTO %@", self);
+        NSLog(@"CAN NOT ADD NIL INTO %@", self);
         return NSNotFound;
     }
     
@@ -247,18 +247,15 @@
 -(BOOL)verify:(id)data{
     if(nil == self.children){
         [NSException raise:@"NO CHILDREN IN COMPLEX RULE" format:@"The children list is nil, Are you sure you need this rule?"];
-        NSLog(@"NO CHILDREN, JUST RETURN NO");
-        return NO;
-    }else{
-        BOOL ret = YES;
-        for(zRule *rule in self.children){
-            ret = ret && [rule verify:data];
-            if(NO == ret){
-                break;
-            }
-        }
-        return ret;
     }
+    BOOL ret = YES;
+    for(zRule *rule in self.children){
+        ret = ret && [rule verify:data];
+        if(NO == ret){
+            break;
+        }
+    }
+    return ret;
 }
 
 +(id)ruleWithChildRule:(zRule *)rule andChildRule:(zRule *)otherRule{
@@ -275,18 +272,16 @@
 -(BOOL)verify:(id)data{
     if(nil == self.children){
         [NSException raise:@"GIVEN NO CHILDREN IN COMPLEX RULE" format:@"The children list is nil, Are you sure you need this rule?"];
-        NSLog(@"NO CHILDREN, JUST RETURN NO");
-        return NO;
-    }else{
-        BOOL ret = NO;
-        for(zRule *rule in self.children){
-            ret = ret || [rule verify:data];
-            if(YES == ret){
-                break;
-            }
-        }
-        return ret;
     }
+    
+    BOOL ret = NO;
+    for(zRule *rule in self.children){
+        ret = ret || [rule verify:data];
+        if(YES == ret){
+            break;
+        }
+    }
+    return ret;
 }
 
 +(id)ruleWithChildRule:(zRule *)rule orChildRule:(zRule *)otherRule{
