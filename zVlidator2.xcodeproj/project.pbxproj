@@ -15,6 +15,8 @@
 		46C172B71CF2078C00083BC4 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 46C172B01CF2078C00083BC4 /* ViewController.m */; };
 		46C172BC1CF207FE00083BC4 /* zRule.m in Sources */ = {isa = PBXBuildFile; fileRef = 46C172BB1CF207FE00083BC4 /* zRule.m */; };
 		46C172C11CF219EB00083BC4 /* zRuleTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 46C172C01CF219EB00083BC4 /* zRuleTest.m */; };
+		46C172C51CF2464400083BC4 /* README.md in Sources */ = {isa = PBXBuildFile; fileRef = 46C172C41CF2464400083BC4 /* README.md */; };
+		46C172CC1CF24B4500083BC4 /* zRuleWithChainingTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 46C172CB1CF24B4500083BC4 /* zRuleWithChainingTest.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -43,6 +45,8 @@
 		46C172BA1CF207FE00083BC4 /* zRule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zRule.h; sourceTree = "<group>"; };
 		46C172BB1CF207FE00083BC4 /* zRule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = zRule.m; sourceTree = "<group>"; };
 		46C172C01CF219EB00083BC4 /* zRuleTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = zRuleTest.m; sourceTree = "<group>"; };
+		46C172C41CF2464400083BC4 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		46C172CB1CF24B4500083BC4 /* zRuleWithChainingTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = zRuleWithChainingTest.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,6 +70,7 @@
 		46C172601CF2075600083BC4 = {
 			isa = PBXGroup;
 			children = (
+				46C172C41CF2464400083BC4 /* README.md */,
 				46C172A41CF2078C00083BC4 /* zVlidator2 */,
 				46C172A51CF2078C00083BC4 /* zVlidator2Demo */,
 				46C172851CF2075600083BC4 /* zVlidator2Tests */,
@@ -87,6 +92,7 @@
 			children = (
 				46C172881CF2075600083BC4 /* Info.plist */,
 				46C172C01CF219EB00083BC4 /* zRuleTest.m */,
+				46C172CB1CF24B4500083BC4 /* zRuleWithChainingTest.m */,
 			);
 			path = zVlidator2Tests;
 			sourceTree = "<group>";
@@ -234,6 +240,7 @@
 			files = (
 				46C172BC1CF207FE00083BC4 /* zRule.m in Sources */,
 				46C172B71CF2078C00083BC4 /* ViewController.m in Sources */,
+				46C172C51CF2464400083BC4 /* README.md in Sources */,
 				46C172B61CF2078C00083BC4 /* main.m in Sources */,
 				46C172B11CF2078C00083BC4 /* AppDelegate.m in Sources */,
 			);
@@ -244,6 +251,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				46C172C11CF219EB00083BC4 /* zRuleTest.m in Sources */,
+				46C172CC1CF24B4500083BC4 /* zRuleWithChainingTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

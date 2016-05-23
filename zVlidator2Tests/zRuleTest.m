@@ -221,7 +221,6 @@
     
     
     zRule *rule = nil;
-    
     @try {
         rule = [isNSString andWithRule:nil];
         [NSException raise:@"UNACCEPTABLE" format:@"CODE SHOULD NOT GO HERE, BECAUSE VERIFY WITH NIL COMPARATOR WILL RAISE AN EXCEPTION"];
@@ -246,13 +245,79 @@
     NSAssert([rule verify:@111], @"should be yes");
     NSAssert(![rule verify:@222], @"should be no");
     
+    zRuleAND *and = [zRuleAND new];
+    @try{
+        
+        [and andWithRule:nil];
+        [NSException raise:@"UNACCEPTABLE" format:@"CODE SHOULD NOT GO HERE, BECAUSE VERIFY WITH NIL COMPARATOR WILL RAISE AN EXCEPTION"];
+    } @catch (NSException *exception) {
+        NSAssert(![@"UNACCEPTABLE" isEqualToString:[exception name]], @"%@", exception);
+    }
+    
+    [[and andWithRule:isNSString] andWithRule:isEqualInteger111];
+    NSAssert(2 == [and count], @"zRuleAND should have 2 children");
+    
+    zRuleOR *or = [zRuleOR new];
+    @try{
+        
+        [or orWithRule:nil];
+        [NSException raise:@"UNACCEPTABLE" format:@"CODE SHOULD NOT GO HERE, BECAUSE VERIFY WITH NIL COMPARATOR WILL RAISE AN EXCEPTION"];
+    } @catch (NSException *exception) {
+        NSAssert(![@"UNACCEPTABLE" isEqualToString:[exception name]], @"%@", exception);
+    }
+    
+    [[or orWithRule:isNSString] orWithRule:isEqualInteger111];
+    NSAssert(2 == [or count], @"zRuleOR should have 2 children");
 }
 
-- (void)testPerformanceExample {
-    // This is an example of a performance test case.
-    [self measureBlock:^{
-        // Put the code you want to measure the time of here.
-    }];
+-(void)testRuleConstruction{
+    
+    zRule *rule = [zRule new];
+    zComplexRule *containerA = [rule andWithRule:[zRule new]];
+    [containerA addRule:[zRule new]];
+    [containerA addRule:[zRule new]];
+    
+    zComplexRule *containerB = [[zRule new] orWithRule:[zRule new]];
+    [containerB addRule:[zRule new]];
+    [containerB addRule:[zRule new]];
+    
+    containerA = [containerA orWithRule:containerB];
+    
+    containerB = [[zRule new] andWithRule:[zRule new]];
+    [containerB addRule:[zRule new]];
+    
+    [containerA addRule:containerB];
+    [containerA addRule:[zRule new]];
+    
+    NSLog(@"\n%@", [containerA debugDescription]);
+}
+
+-(void)testRuleConstructionWithNames{
+    zComplexRule *root = [zRuleOR new];
+    
+    zRule *rule = [zRule new];
+    rule.name = @"isNil";
+    [root addRule:rule];
+    
+    zComplexRule *ruleAND = [zRuleAND new];
+    
+    rule = [zRule new];
+    rule.name = @"isNSString";
+    [ruleAND addRule:rule];
+    
+    rule = [zRule new];
+    rule.name = @"lengthGreaterThan 4";
+    [ruleAND addRule:rule];
+    
+    rule = [zRule new];
+    rule.name = @"lengthLessThan 6";
+    [ruleAND addRule:rule];
+    
+    [root addRule:ruleAND];
+    
+    
+    
+    NSLog(@"\n%@", [root debugDescription]);
 }
 
 @end

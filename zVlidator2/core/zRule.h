@@ -12,13 +12,13 @@
 
 @interface zRule : NSObject<NSCopying>
 @property (nonatomic, weak) zComplexRule * _Nullable parent;
+@property (nonatomic, copy) NSString * _Nullable name;
 
 -(BOOL)verify:(_Nullable id)data;
 @end
 
 
 #pragma mark - zRuleWithComparator
-
 typedef BOOL (^zComparatorBlock)(_Nullable id data);
 @interface zRuleWithComparator : zRule
 @property (nonatomic, copy, readonly) zComparatorBlock _Nonnull comparator;
@@ -53,8 +53,14 @@ typedef BOOL (^zComparatorBlock)(_Nullable id data);
 @end
 
 
-#pragma mark - zRule(Combination)
+#pragma mark - Combination
 @interface zRule(Combination)
 -(zRuleOR * _Nonnull )orWithRule:(zRule * _Nonnull )rule;
 -(zRuleAND * _Nonnull )andWithRule:(zRule * _Nonnull )rule;
+@end
+
+#pragma mark - Chaining Support
+@interface zRule(ChainingSupport)
+-(zRule * _Nonnull (^ _Nonnull)(zComparatorBlock _Nonnull))is;
+-(zRule * _Nonnull (^ _Nonnull)(zComparatorBlock _Nonnull))not;
 @end
