@@ -52,7 +52,7 @@ Any problems? please post issues [here](https://github.com/larryonline/zValidato
 - FoundationKit support.
 - UIKit support.
 - Configuration file support.
-- EVEN MORE...
+- ...
 
 ---
 # Licenses
