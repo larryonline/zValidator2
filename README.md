@@ -44,7 +44,7 @@ if([rule verify:@"random string"]){
 
 ---
 # Issues
-Any problems? please post an issues [here](https://github.com/larryonline/zValidator2/issues).
+Any problems? please post issues [here](https://github.com/larryonline/zValidator2/issues).
 
 ---
 # Road Map
