@@ -15,8 +15,11 @@
 		46C172B71CF2078C00083BC4 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 46C172B01CF2078C00083BC4 /* ViewController.m */; };
 		46C172BC1CF207FE00083BC4 /* zRule.m in Sources */ = {isa = PBXBuildFile; fileRef = 46C172BB1CF207FE00083BC4 /* zRule.m */; };
 		46C172C11CF219EB00083BC4 /* zRuleTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 46C172C01CF219EB00083BC4 /* zRuleTest.m */; };
-		46C172C51CF2464400083BC4 /* README.md in Sources */ = {isa = PBXBuildFile; fileRef = 46C172C41CF2464400083BC4 /* README.md */; };
 		46C172CC1CF24B4500083BC4 /* zRuleWithChainingTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 46C172CB1CF24B4500083BC4 /* zRuleWithChainingTest.m */; };
+		46C172D01CF367E700083BC4 /* NSString+zValidator.m in Sources */ = {isa = PBXBuildFile; fileRef = 46C172CF1CF367E700083BC4 /* NSString+zValidator.m */; };
+		46C172D51CF4182100083BC4 /* NSString+zValidatorTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 46C172D41CF4182100083BC4 /* NSString+zValidatorTest.m */; };
+		46C6387D1CF4D34F0033D0B0 /* NSNumber+zValidator.m in Sources */ = {isa = PBXBuildFile; fileRef = 46C6387C1CF4D34F0033D0B0 /* NSNumber+zValidator.m */; };
+		46C6387F1CF5736F0033D0B0 /* NSNumber+zValidatorTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 46C6387E1CF5736F0033D0B0 /* NSNumber+zValidatorTest.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,6 +50,13 @@
 		46C172C01CF219EB00083BC4 /* zRuleTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = zRuleTest.m; sourceTree = "<group>"; };
 		46C172C41CF2464400083BC4 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		46C172CB1CF24B4500083BC4 /* zRuleWithChainingTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = zRuleWithChainingTest.m; sourceTree = "<group>"; };
+		46C172CE1CF367E700083BC4 /* NSString+zValidator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+zValidator.h"; sourceTree = "<group>"; };
+		46C172CF1CF367E700083BC4 /* NSString+zValidator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+zValidator.m"; sourceTree = "<group>"; };
+		46C172D41CF4182100083BC4 /* NSString+zValidatorTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+zValidatorTest.m"; sourceTree = "<group>"; };
+		46C6387B1CF4D34F0033D0B0 /* NSNumber+zValidator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSNumber+zValidator.h"; sourceTree = "<group>"; };
+		46C6387C1CF4D34F0033D0B0 /* NSNumber+zValidator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSNumber+zValidator.m"; sourceTree = "<group>"; };
+		46C6387E1CF5736F0033D0B0 /* NSNumber+zValidatorTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSNumber+zValidatorTest.m"; sourceTree = "<group>"; };
+		46C638801CF576B50033D0B0 /* Foundation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Foundation.h; path = zVlidator2/Foundation.h; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -93,6 +103,8 @@
 				46C172881CF2075600083BC4 /* Info.plist */,
 				46C172C01CF219EB00083BC4 /* zRuleTest.m */,
 				46C172CB1CF24B4500083BC4 /* zRuleWithChainingTest.m */,
+				46C172D41CF4182100083BC4 /* NSString+zValidatorTest.m */,
+				46C6387E1CF5736F0033D0B0 /* NSNumber+zValidatorTest.m */,
 			);
 			path = zVlidator2Tests;
 			sourceTree = "<group>";
@@ -100,6 +112,8 @@
 		46C172A41CF2078C00083BC4 /* zVlidator2 */ = {
 			isa = PBXGroup;
 			children = (
+				46C638801CF576B50033D0B0 /* Foundation.h */,
+				46C172CD1CF367CB00083BC4 /* Foundation */,
 				46C172B91CF207DE00083BC4 /* core */,
 			);
 			path = zVlidator2;
@@ -136,6 +150,17 @@
 				46C172BB1CF207FE00083BC4 /* zRule.m */,
 			);
 			path = core;
+			sourceTree = "<group>";
+		};
+		46C172CD1CF367CB00083BC4 /* Foundation */ = {
+			isa = PBXGroup;
+			children = (
+				46C172CE1CF367E700083BC4 /* NSString+zValidator.h */,
+				46C172CF1CF367E700083BC4 /* NSString+zValidator.m */,
+				46C6387B1CF4D34F0033D0B0 /* NSNumber+zValidator.h */,
+				46C6387C1CF4D34F0033D0B0 /* NSNumber+zValidator.m */,
+			);
+			path = Foundation;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -239,8 +264,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				46C172BC1CF207FE00083BC4 /* zRule.m in Sources */,
+				46C6387D1CF4D34F0033D0B0 /* NSNumber+zValidator.m in Sources */,
 				46C172B71CF2078C00083BC4 /* ViewController.m in Sources */,
-				46C172C51CF2464400083BC4 /* README.md in Sources */,
+				46C172D01CF367E700083BC4 /* NSString+zValidator.m in Sources */,
 				46C172B61CF2078C00083BC4 /* main.m in Sources */,
 				46C172B11CF2078C00083BC4 /* AppDelegate.m in Sources */,
 			);
@@ -251,6 +277,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				46C172C11CF219EB00083BC4 /* zRuleTest.m in Sources */,
+				46C6387F1CF5736F0033D0B0 /* NSNumber+zValidatorTest.m in Sources */,
+				46C172D51CF4182100083BC4 /* NSString+zValidatorTest.m in Sources */,
 				46C172CC1CF24B4500083BC4 /* zRuleWithChainingTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
