@@ -28,7 +28,7 @@
 
 - (void)testRuleChaining{
     
-    zRule *rule = [zRuleAND new].is(^BOOL(id data){
+    id<zRule> rule = [zComplexRule ruleLogicAND].is(^BOOL(id data){
         return [data isKindOfClass:[NSString class]];
     }).is(^BOOL(id data){
         return [data length] > 4;
@@ -77,7 +77,7 @@
     NSAssert([rule validate:nil], @"should not be NO");
     
     
-    zRule *and = [zRuleAND new].is(^BOOL(id data){
+    zRule *and = [zComplexRule ruleLogicAND].is(^BOOL(id data){
         return [data isKindOfClass:[NSString class]];
     }).not(^BOOL(id data){
         return [data length] > 5;

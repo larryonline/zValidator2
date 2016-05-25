@@ -7,60 +7,68 @@
 //
 
 #import <Foundation/Foundation.h>
-#pragma mark - zRule
-@class zComplexRule;
 
-@interface zRule : NSObject<NSCopying>
-@property (nonatomic, weak) zComplexRule * _Nullable parent;
+#pragma mark - protocols
+@protocol zRule, zComplexRule, zRuleWithChainingSupport;
+
+// Basic Validation Support
+@protocol zRule <NSObject, NSCopying, zRuleWithChainingSupport>
 @property (nonatomic, copy) NSString * _Nullable name;
 
--(BOOL)validate:(_Nullable id)data;
+@property (nonatomic, weak, readonly) id<zComplexRule> _Nullable root;
+@property (nonatomic, weak) id<zComplexRule> _Nullable parent;
+
+-(BOOL)validate:(id _Nullable)data;
 @end
 
-
-#pragma mark - zRuleWithComparator
-typedef BOOL (^zComparatorBlock)(_Nullable id data);
-@interface zRuleWithComparator : zRule
-@property (nonatomic, copy, readonly) zComparatorBlock _Nonnull comparator;
-
--(_Nonnull id)initWithComparator:(_Nonnull zComparatorBlock)comparator;
-+(_Nonnull id)ruleWithComparator:(_Nonnull zComparatorBlock)comparator;
+// Multi-Rule Validation Support
+@protocol zComplexRuleOperation <NSObject, NSCopying>
+@property (nonatomic, copy, readonly) NSString * _Nonnull name;
+-(BOOL)validate:(id _Nonnull)data withRules:(NSArray<id<zRule>> * _Nonnull)rules;
 @end
 
+@protocol zComplexRule <zRule>
+@property (nonatomic, copy) id<zComplexRuleOperation> _Nonnull operation;
 
-#pragma mark - zComplexRule
-@interface zComplexRule : zRule
-@property (nonatomic, copy, readonly) NSArray<zRule *> * _Nullable children;
+@property (nonatomic, copy, readonly) NSArray<id<zRule>> * _Nullable children;
 @property (nonatomic, assign, readonly) NSUInteger count;
 
--(_Nonnull id)initWithChildren:(NSArray<zRule *> * _Nullable)children;
 
-+(_Nonnull id)ruleWithChildren:(NSArray<zRule *> * _Nullable)children;
-@end
+-(NSUInteger)addRule:(id<zRule> _Nonnull)rule;
+-(NSUInteger)removeRule:(id<zRule> _Nonnull)rule;
+-(id<zRule> _Nullable)removeRuleAtIndex:(NSUInteger)index;
 
-@interface zComplexRule(Mutable)
--(NSUInteger)addRule:(zRule * _Nonnull )rule;
--(NSUInteger)removeRule:(zRule * _Nonnull )rule;
--(zRule * _Nonnull )removeRuleAtIndex:(NSUInteger) index;
-@end
++(id _Nonnull)ruleWithChildren:(NSArray<id<zRule>> * _Nonnull)children operation:(id<zComplexRuleOperation> _Nonnull)operation;
 
-@interface zRuleAND : zComplexRule
-+(_Nonnull id)ruleWithChildRule:(zRule * _Nonnull)rule andChildRule:(zRule * _Nonnull)otherRule;
-@end
++(instancetype _Nonnull)ruleLogicAND;
++(instancetype _Nonnull)ruleLogicANDWithChildren:(NSArray<id<zRule>> * _Nonnull)children;
 
-@interface zRuleOR : zComplexRule
-+(_Nonnull id)ruleWithChildRule:(zRule * _Nonnull)rule orChildRule:(zRule * _Nonnull)otherRule;
++(instancetype _Nonnull)ruleLogicOR;
++(instancetype _Nonnull)ruleLogicORWithChildren:(NSArray<id<zRule>> * _Nonnull)children;
 @end
 
 
-#pragma mark - Combination
-@interface zRule(Combination)
--(zRuleOR * _Nonnull )orWithRule:(zRule * _Nonnull )rule;
--(zRuleAND * _Nonnull )andWithRule:(zRule * _Nonnull )rule;
+// Chaining Syntax Support
+typedef BOOL (^zRuleComparatorBlock)(_Nullable id data);
+@protocol zRuleWithChainingSupport <NSObject>
+-(id<zRule> _Nonnull(^ _Nonnull)(zRuleComparatorBlock _Nonnull))is;
+-(id<zRule> _Nonnull(^ _Nonnull)(zRuleComparatorBlock _Nonnull))not;
 @end
 
-#pragma mark - Chaining Support
-@interface zRule(ChainingSupport)
--(zRule * _Nonnull (^ _Nonnull)(zComparatorBlock _Nonnull))is;
--(zRule * _Nonnull (^ _Nonnull)(zComparatorBlock _Nonnull))not;
+
+#pragma mark - zRule
+@interface zRule : NSObject<zRule>
 @end
+
+#pragma mark - zRuleWithComparator
+@interface zRuleWithComparator : zRule
+@property (nonatomic, copy, readonly) zRuleComparatorBlock _Nonnull comparator;
+-(_Nonnull id)initWithComparator:(zRuleComparatorBlock _Nonnull)comparator;
++(_Nonnull id)ruleWithComparator:(zRuleComparatorBlock _Nonnull)comparator;
+@end
+
+#pragma mark - zComplexRule
+@interface zComplexRule : zRule<zComplexRule>
+-(_Nonnull id)initWithChildren:(NSArray<id<zRule>> * _Nullable)children operation:(id<zComplexRuleOperation> _Nonnull)operation;
+@end
+

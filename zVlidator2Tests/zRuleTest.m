@@ -38,22 +38,16 @@
     
     zRuleWithComparator *ruleWithComparator = [zRuleWithComparator new];
     zComplexRule *complexRule = [zComplexRule new];
-    zRuleAND *ruleAND = [zRuleAND new];
-    zRuleOR *ruleOR = [zRuleOR new];
     
     
     // test isEqual implementation
-    NSArray *list = @[rule, ruleWithComparator, complexRule, ruleAND, ruleOR];
+    NSArray *list = @[rule, ruleWithComparator, complexRule];
     id tester = [rule copy];
     NSAssert(0 == [list indexOfObject:tester], @"CAN NOT FOUND COPY IN RULE LIST");
     tester = [ruleWithComparator copy];
     NSAssert(1 == [list indexOfObject:tester], @"CAN NOT FOUND COPY IN RULE LIST");
     tester = [complexRule copy];
     NSAssert(2 == [list indexOfObject:tester], @"CAN NOT FOUND COPY IN RULE LIST");
-    tester = [ruleAND copy];
-    NSAssert(3 == [list indexOfObject:tester], @"CAN NOT FOUND COPY IN RULE LIST");
-    tester = [ruleOR copy];
-    NSAssert(4 == [list indexOfObject:tester], @"CAN NOT FOUND COPY IN RULE LIST");
     
     
     // test hash implementation
@@ -61,8 +55,6 @@
         rule : @1,
         ruleWithComparator: @2,
         complexRule: @3,
-        ruleAND: @4,
-        ruleOR: @5
     };
     tester = [rule copy];
     NSAssert(1 == [[map objectForKey:tester] integerValue], @"CAN NOT FOUND COPY IN RULE DICTIONARY");
@@ -70,10 +62,6 @@
     NSAssert(2 == [[map objectForKey:tester] integerValue], @"CAN NOT FOUND COPY IN RULE DICTIONARY");
     tester = [complexRule copy];
     NSAssert(3 == [[map objectForKey:tester] integerValue], @"CAN NOT FOUND COPY IN RULE DICTIONARY");
-    tester = [ruleAND copy];
-    NSAssert(4 == [[map objectForKey:tester] integerValue], @"CAN NOT FOUND COPY IN RULE DICTIONARY");
-    tester = [ruleOR copy];
-    NSAssert(5 == [[map objectForKey:tester] integerValue], @"CAN NOT FOUND COPY IN RULE DICTIONARY");
 }
 
 
@@ -98,9 +86,17 @@
 - (void)testComplexRule{
     NSArray *rules = @[[zRule new], [zRuleWithComparator new]];
     
-    zComplexRule *rule = [zComplexRule ruleWithChildren:rules];
+    zComplexRule *rule = [zComplexRule ruleWithChildren:rules operation:nil];
     NSAssert(0 < [rule count], @"%@ Children should not be empty", rule);
     
+    @try {
+        [rule validate:nil];
+        [NSException raise:@"UNACCEPTABLE" format:@"CODE SHOULD NOT GO HERE, BECAUSE VALIDATE WITH NIL COMPARATOR WILL RAISE AN EXCEPTION"];
+    } @catch (NSException *exception) {
+        NSAssert(![@"UNACCEPTABLE" isEqualToString:[exception name]], @"%@", exception);
+    }
+    
+    rule = [zComplexRule ruleLogicANDWithChildren:rules];
     @try {
         [rule addRule:rule];
         [NSException raise:@"UNACCEPTABLE" format:@"CODE SHOULD NOT GO HERE, BECAUSE VALIDATE WITH NIL COMPARATOR WILL RAISE AN EXCEPTION"];
@@ -115,9 +111,9 @@
     NSAssert(nil == [rule removeRuleAtIndex:[rule count]], @"remove rule at index which bigger or equal than [rule count], will get nil");
     
     
-    rule = [zComplexRule ruleWithChildren:nil];
+    rule = [zComplexRule ruleLogicANDWithChildren:nil];
     
-    zComplexRule *otherRule = [zComplexRule ruleWithChildren:@[]];
+    zComplexRule *otherRule = [zComplexRule ruleLogicORWithChildren:@[]];
     zRule *childAlreadyHaveParent = [zRule new];
     [otherRule addRule:childAlreadyHaveParent];
     NSAssert(childAlreadyHaveParent.parent == otherRule, @"once the child have added into the parent rule, the child.parent should equal parent rule");
@@ -146,160 +142,51 @@
     id removed = [rule removeRuleAtIndex:index];
     NSAssert(removed == child, @"expect removed child %@, but actually it's %@", removed, child);
     
-}
-
-- (void)testRuleAND{
     
-    zRuleAND *and = [[zRuleAND alloc] initWithChildren:nil];
+    
+    zRule *isNSString = [zRuleWithComparator ruleWithComparator:^BOOL(id  _Nullable data) {
+        return [data isKindOfClass:[NSString class]];
+    }];
+    
+    zRule *isEqualInteger111 = [zRuleWithComparator ruleWithComparator:^BOOL(id  _Nullable data) {
+        return [data integerValue] == 111;
+    }];
+    
+    // test LOGIC AND
+    id<zRule> and = [zComplexRule ruleLogicANDWithChildren:nil];
     @try {
         [and validate:@111];
         [NSException raise:@"UNACCEPTABLE" format:@"CODE SHOULD NOT GO HERE, BECAUSE VALIDATE WITH NIL COMPARATOR WILL RAISE AN EXCEPTION"];
     } @catch (NSException *exception) {
         NSAssert(![@"UNACCEPTABLE" isEqualToString:[exception name]], @"%@", exception);
     }
-    
-    @try {
-        and = [zRuleAND ruleWithChildRule:nil andChildRule:nil];
-        [NSException raise:@"UNACCEPTABLE" format:@"CODE SHOULD NOT GO HERE, BECAUSE VALIDATE WITH NIL COMPARATOR WILL RAISE AN EXCEPTION"];
-    } @catch (NSException *exception) {
-        NSAssert(![@"UNACCEPTABLE" isEqualToString:[exception name]], @"%@", exception);
-    }
-    
-    
-    zRule *isNSString = [zRuleWithComparator ruleWithComparator:^BOOL(id  _Nullable data) {
-        return [data isKindOfClass:[NSString class]];
-    }];
-    
-    zRule *isEqualInteger111 = [zRuleWithComparator ruleWithComparator:^BOOL(id  _Nullable data) {
-        return [data integerValue] == 111;
-    }];
-    
-    
-    and = [zRuleAND ruleWithChildRule:isNSString andChildRule:isEqualInteger111];
+    and = [zComplexRule ruleLogicANDWithChildren:@[isNSString,isEqualInteger111]];
     NSAssert([and validate:@"111"], @"should be yes");
     NSAssert(![and validate:@111], @"should be no");
-}
-
-- (void)testRuleOR{
-    zRuleOR *or = [[zRuleOR alloc] initWithChildren:nil];
+    
+    
+    // test LOGIC OR
+    id<zRule> or = [zComplexRule ruleLogicORWithChildren:nil];
     @try {
         [or validate:@111];
         [NSException raise:@"UNACCEPTABLE" format:@"CODE SHOULD NOT GO HERE, BECAUSE VALIDATE WITH NIL COMPARATOR WILL RAISE AN EXCEPTION"];
     } @catch (NSException *exception) {
         NSAssert(![@"UNACCEPTABLE" isEqualToString:[exception name]], @"%@", exception);
     }
-    
-    @try {
-        or = [zRuleOR ruleWithChildRule:nil orChildRule:nil];
-        [NSException raise:@"UNACCEPTABLE" format:@"CODE SHOULD NOT GO HERE, BECAUSE VALIDATE WITH NIL COMPARATOR WILL RAISE AN EXCEPTION"];
-    } @catch (NSException *exception) {
-        NSAssert(![@"UNACCEPTABLE" isEqualToString:[exception name]], @"%@", exception);
-    }
-    
-    zRule *isNSString = [zRuleWithComparator ruleWithComparator:^BOOL(id  _Nullable data) {
-        return [data isKindOfClass:[NSString class]];
-    }];
-    
-    zRule *isEqualInteger111 = [zRuleWithComparator ruleWithComparator:^BOOL(id  _Nullable data) {
-        return [data integerValue] == 111;
-    }];
-    
-    or = [zRuleOR ruleWithChildRule:isNSString orChildRule:isEqualInteger111];
+    or = [zComplexRule ruleLogicORWithChildren:@[isNSString,isEqualInteger111]];
     NSAssert([or validate:@"111"], @"should be yes");
     NSAssert([or validate:@111], @"should be yes");
     NSAssert(![or validate:@222], @"should be no");
 }
 
-- (void)testRuleCombination{
-    zRule *isNSString = [zRuleWithComparator ruleWithComparator:^BOOL(id  _Nullable data) {
-        return [data isKindOfClass:[NSString class]];
-    }];
-    
-    zRule *isEqualInteger111 = [zRuleWithComparator ruleWithComparator:^BOOL(id  _Nullable data) {
-        return [data integerValue] == 111;
-    }];
-    
-    
-    zRule *rule = nil;
-    @try {
-        rule = [isNSString andWithRule:nil];
-        [NSException raise:@"UNACCEPTABLE" format:@"CODE SHOULD NOT GO HERE, BECAUSE VALIDATE WITH NIL COMPARATOR WILL RAISE AN EXCEPTION"];
-    } @catch (NSException *exception) {
-        NSAssert(![@"UNACCEPTABLE" isEqualToString:[exception name]], @"%@", exception);
-    }
-    
-    @try {
-        rule = [isNSString orWithRule:nil];
-        [NSException raise:@"UNACCEPTABLE" format:@"CODE SHOULD NOT GO HERE, BECAUSE VALIDATE WITH NIL COMPARATOR WILL RAISE AN EXCEPTION"];
-    } @catch (NSException *exception) {
-        NSAssert(![@"UNACCEPTABLE" isEqualToString:[exception name]], @"%@", exception);
-    }
-    
-    
-    rule = [isNSString andWithRule:isEqualInteger111];
-    NSAssert([rule validate:@"111"], @"should be yes");
-    NSAssert(![rule validate:@111], @"should be no");
-    
-    rule = [isNSString orWithRule:isEqualInteger111];
-    NSAssert([rule validate:@"111"], @"should be yes");
-    NSAssert([rule validate:@111], @"should be yes");
-    NSAssert(![rule validate:@222], @"should be no");
-    
-    zRuleAND *and = [zRuleAND new];
-    @try{
-        
-        [and andWithRule:nil];
-        [NSException raise:@"UNACCEPTABLE" format:@"CODE SHOULD NOT GO HERE, BECAUSE VALIDATE WITH NIL COMPARATOR WILL RAISE AN EXCEPTION"];
-    } @catch (NSException *exception) {
-        NSAssert(![@"UNACCEPTABLE" isEqualToString:[exception name]], @"%@", exception);
-    }
-    
-    [[and andWithRule:isNSString] andWithRule:isEqualInteger111];
-    NSAssert(2 == [and count], @"zRuleAND should have 2 children");
-    
-    zRuleOR *or = [zRuleOR new];
-    @try{
-        
-        [or orWithRule:nil];
-        [NSException raise:@"UNACCEPTABLE" format:@"CODE SHOULD NOT GO HERE, BECAUSE VALIDATE WITH NIL COMPARATOR WILL RAISE AN EXCEPTION"];
-    } @catch (NSException *exception) {
-        NSAssert(![@"UNACCEPTABLE" isEqualToString:[exception name]], @"%@", exception);
-    }
-    
-    [[or orWithRule:isNSString] orWithRule:isEqualInteger111];
-    NSAssert(2 == [or count], @"zRuleOR should have 2 children");
-}
-
--(void)testRuleConstruction{
-    
-    zRule *rule = [zRule new];
-    zComplexRule *containerA = [rule andWithRule:[zRule new]];
-    [containerA addRule:[zRule new]];
-    [containerA addRule:[zRule new]];
-    
-    zComplexRule *containerB = [[zRule new] orWithRule:[zRule new]];
-    [containerB addRule:[zRule new]];
-    [containerB addRule:[zRule new]];
-    
-    containerA = [containerA orWithRule:containerB];
-    
-    containerB = [[zRule new] andWithRule:[zRule new]];
-    [containerB addRule:[zRule new]];
-    
-    [containerA addRule:containerB];
-    [containerA addRule:[zRule new]];
-    
-    NSLog(@"\n%@", [containerA debugDescription]);
-}
-
 -(void)testRuleConstructionWithNames{
-    zComplexRule *root = [zRuleOR new];
+    zComplexRule *root = [zComplexRule ruleLogicOR];
     
     zRule *rule = [zRule new];
     rule.name = @"isNil";
     [root addRule:rule];
     
-    zComplexRule *ruleAND = [zRuleAND new];
+    zComplexRule *ruleAND = [zComplexRule ruleLogicAND];
     
     rule = [zRule new];
     rule.name = @"isNSString";
@@ -316,6 +203,8 @@
     [root addRule:ruleAND];
     
     
+    NSAssert(rule.root == root, @"root chain is broken");
+    NSAssert(ruleAND.root == root, @"root chain is broken");
     
     NSLog(@"\n%@", [root debugDescription]);
 }

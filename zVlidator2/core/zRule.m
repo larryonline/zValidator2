@@ -8,14 +8,8 @@
 
 #import "zRule.h"
 
-#pragma - zRule
-@interface zRule()
-@property (nonatomic, copy) NSString *uuid;
-@end
-
-@implementation zRule
-
-+(NSString *)makeUUID{
+// uuid for each rule.
+static NSString *makeUUID(){
     CFUUIDRef uuid_ref = CFUUIDCreate(NULL);
     CFStringRef uuid_string_ref= CFUUIDCreateString(NULL, uuid_ref);
     NSString *uuid = [NSString stringWithString:(__bridge NSString *)uuid_string_ref];
@@ -24,22 +18,33 @@
     return [uuid lowercaseString];
 }
 
-@synthesize uuid = _uuid, name = _name;
+#pragma - zRule
+@interface zRule()
+@property (nonatomic, copy) NSString *uuid;
+@end
+
+@implementation zRule
+
+@synthesize uuid = _uuid, name = _name, parent = _parent;
 
 -(id)initWithUuid:(NSString *)uuid{
     if(self = [super init]){
-        NSAssert(nil != uuid && ![@"" isEqualToString:uuid], @"Given UUID[%@] *CAN NOT* be empty", uuid);
+        NSAssert(nil != uuid && ![@"" isEqualToString:uuid], @"Given UUID[%@] *CAN NOT* be EMPTY", uuid);
         self.uuid = uuid;
     }
     return self;
 }
 
 -(id)init{
-    return [self initWithUuid:[[self class] makeUUID]];
+    return [self initWithUuid:makeUUID()];
+}
+
+-(id<zComplexRule>)root{
+    return nil == self.parent? nil : self.parent.root;
 }
 
 -(BOOL)validate:(id)data{
-    [NSException raise:@"DEFAULT IMPLEMENTATION, SUBCLASS SHOULD OVERRIDE THIS METHOD." format:@"zRule is an ABSTRACT class, you should not use it directly, please extend it and override it's -(BOOL)validate:(id)data method."];
+    [NSException raise:@"DEFAULT IMPLEMENTATION, SUBCLASS SHOULD OVERRIDE THIS METHOD." format:@"zRule is an ABSTRACT class, you can not use it directly, please extend it and override then -(BOOL)validate:(id)data method."];
     return NO;
 }
 
@@ -55,6 +60,24 @@
     return [[self class] hash] ^ [[self uuid] hash];
 }
 
+// Chaining Syntax Support
+
+-(id<zRule> (^)(zRuleComparatorBlock))is{
+    return ^(zRuleComparatorBlock block){
+        return [zRuleWithComparator ruleWithComparator:block];
+    };
+}
+
+-(id<zRule> (^)(zRuleComparatorBlock))not{
+    return ^(zRuleComparatorBlock block){
+        return [zRuleWithComparator ruleWithComparator:^BOOL(id  _Nullable data) {
+            return !block(data);
+        }];
+    };
+}
+
+// Debug Support
+
 -(NSString *)debugDescription{
     if([self.name isKindOfClass:[NSString class]] && 0 < [self.name length]){
         return [NSString stringWithFormat:@"[%@]", self.name];
@@ -68,13 +91,13 @@
 #pragma mark - zRuleWithComparator
 
 @interface zRuleWithComparator()
-@property (nonatomic, copy) zComparatorBlock comparator;
+@property (nonatomic, copy) zRuleComparatorBlock comparator;
 @end
 @implementation zRuleWithComparator
 
 @synthesize comparator = _comparator;
 
--(id)initWithComparator:(zComparatorBlock)comparator{
+-(id)initWithComparator:(zRuleComparatorBlock)comparator{
     if(self = [super init]){
         self.comparator = comparator;
     }
@@ -94,8 +117,71 @@
     return copy;
 }
 
-+(id)ruleWithComparator:(zComparatorBlock)comparator{
+// Chaining Support
+-(id<zRule> (^)(zRuleComparatorBlock))is{
+    return ^(zRuleComparatorBlock block){
+        self.comparator = block;
+        return self;
+    };
+}
+
+-(id<zRule> (^)(zRuleComparatorBlock))not{
+    return ^(zRuleComparatorBlock block){
+        self.comparator = ^BOOL(id data){
+            return !block(data);
+        };
+        return self;
+    };
+}
+
+
++(id)ruleWithComparator:(zRuleComparatorBlock)comparator{
     return [[[self class] alloc] initWithComparator:comparator];
+}
+
+@end
+
+#pragma mark - zComplexRuleOperations
+@interface zComplexRuleOperationLogicAND:NSObject<zComplexRuleOperation>
+@end
+@implementation zComplexRuleOperationLogicAND
+-(NSString *)name{
+    return @"AND";
+}
+-(BOOL)validate:(id)data withRules:(NSArray<id<zRule>> *)rules{
+    BOOL ret = YES;
+    for(id<zRule> rule in rules){
+        ret = ret && [rule validate:data];
+        if(NO == ret){
+            break;
+        }
+    }
+    return ret;
+}
+-(id)copyWithZone:(NSZone *)zone{
+    return [[[self class] allocWithZone:zone] init];
+}
+@end
+
+@interface zComplexRuleOperationLogicOR : NSObject<zComplexRuleOperation>
+@end
+@implementation zComplexRuleOperationLogicOR
+-(NSString *)name{
+    return @"OR";
+}
+-(BOOL)validate:(id)data withRules:(NSArray<id<zRule>> *)rules{
+    BOOL ret = NO;
+    for(zRule *rule in rules){
+        ret = ret || [rule validate:data];
+        if(YES == ret){
+            break;
+        }
+    }
+    return ret;
+}
+
+-(id)copyWithZone:(NSZone *)zone{
+    return [[[self class] allocWithZone:zone] init];
 }
 @end
 
@@ -105,13 +191,14 @@
 @end
 @implementation zComplexRule
 
-@synthesize children = _children;
+@synthesize children = _children, operation = _operation;
 
--(id)initWithChildren:(NSArray<zRule *> *)children{
+-(id)initWithChildren:(NSArray<zRule *> *)children operation:(id<zComplexRuleOperation>)operation{
     if(self = [super init]){
         if(nil != children){
             self.children = children;
         }
+        self.operation = operation;
     }
     return self;
 }
@@ -120,8 +207,13 @@
     return [self.children count];
 }
 
+-(id<zComplexRule>)root{
+    return nil != self.parent? self.parent.root : 0 < self.count? self : nil;
+}
+
 -(id)copyWithZone:(NSZone *)zone{
     zComplexRule *copy = [super copyWithZone:zone];
+    copy.operation = self.operation;
     copy.children = self.children;
     return copy;
 }
@@ -130,47 +222,6 @@
     return [super hash] ^ [self.children hash];
 }
 
-+(id)ruleWithChildren:(NSArray<zRule *> *)children{
-    return [[[self class] alloc] initWithChildren:children];
-}
-
--(NSString *)debugDescription{
-    NSMutableArray *result = [NSMutableArray new];
-    NSString *prefix = @"    |- ";
-    NSString *prefix2 = @"    | ";
-    NSString *operator = @"    ??";
-    
-    if([self isKindOfClass:[zRuleAND class]]){
-        operator = @"   AND";
-    }else if([self isKindOfClass:[zRuleOR class]]){
-        operator = @"    OR";
-    }
-    
-    [result addObject:[super debugDescription]];
-    
-    NSInteger numOfChildren = [self.children count];
-    if(0 < numOfChildren){
-        
-        for(NSInteger i = 0; i < numOfChildren; i++){
-            NSString *raw = [[self.children objectAtIndex:i] debugDescription];
-            NSArray *rows = [raw componentsSeparatedByString:@"\n"];
-            if(i > 0){
-                [result addObject:operator];
-            }
-
-            NSInteger numOfRow = [rows count];
-            for(NSInteger j = 0; j < numOfRow; j++){
-                NSString *row = [rows objectAtIndex:j];
-                [result addObject:[NSString stringWithFormat:@"%@%@", 0 == j?prefix:prefix2, row]];
-            }
-        }
-    }
-    return [result componentsJoinedByString:@"\n"];
-}
-
-@end
-
-@implementation zComplexRule(Mutable)
 -(NSUInteger)addRule:(zRule *)rule{
     if(nil == rule){
         NSLog(@"CAN NOT ADD NIL INTO %@", self);
@@ -241,148 +292,56 @@
     return ret;
 }
 
-@end
-
-@implementation zRuleAND
 -(BOOL)validate:(id)data{
     if(nil == self.children){
         [NSException raise:@"NO CHILDREN IN COMPLEX RULE" format:@"The children list is nil, Are you sure you need this rule?"];
     }
-    BOOL ret = YES;
-    for(zRule *rule in self.children){
-        ret = ret && [rule validate:data];
-        if(NO == ret){
-            break;
+    
+    if(nil == self.operation){
+        [NSException raise:@"NO OPERATION BLOCK IN COMPLEX RULE" format:@"The operation block is nil, Are you sure you need this rule?"];
+    }
+    
+    return [self.operation validate:data withRules:self.children];
+}
+
+
+-(NSString *)debugDescription{
+    NSMutableArray *result = [NSMutableArray new];
+    NSString *prefix = @"    |- ";
+    NSString *prefix2 = @"    | ";
+    NSString *operator = [NSString stringWithFormat:@"    %@", self.operation.name];
+    
+    [result addObject:[super debugDescription]];
+    
+    NSInteger numOfChildren = [self.children count];
+    if(0 < numOfChildren){
+        
+        for(NSInteger i = 0; i < numOfChildren; i++){
+            NSString *raw = [[self.children objectAtIndex:i] debugDescription];
+            NSArray *rows = [raw componentsSeparatedByString:@"\n"];
+            if(i > 0){
+                [result addObject:operator];
+            }
+            
+            NSInteger numOfRow = [rows count];
+            for(NSInteger j = 0; j < numOfRow; j++){
+                NSString *row = [rows objectAtIndex:j];
+                [result addObject:[NSString stringWithFormat:@"%@%@", 0 == j?prefix:prefix2, row]];
+            }
         }
     }
-    return ret;
+    return [result componentsJoinedByString:@"\n"];
 }
 
-+(id)ruleWithChildRule:(zRule *)rule andChildRule:(zRule *)otherRule{
-    if(nil == rule || nil == otherRule){
-        [NSException raise:@"GIVEN RULE SHOULD NOT BE NIL." format:@"The given rules should not be nil"];
-    }
-    
-    return [[self class] ruleWithChildren:@[rule, otherRule]];
-}
-
-@end
-
-@implementation zRuleOR
--(BOOL)validate:(id)data{
-    if(nil == self.children){
-        [NSException raise:@"GIVEN NO CHILDREN IN COMPLEX RULE" format:@"The children list is nil, Are you sure you need this rule?"];
-    }
-    
-    BOOL ret = NO;
-    for(zRule *rule in self.children){
-        ret = ret || [rule validate:data];
-        if(YES == ret){
-            break;
-        }
-    }
-    return ret;
-}
-
-+(id)ruleWithChildRule:(zRule *)rule orChildRule:(zRule *)otherRule{
-    if(nil == rule || nil == otherRule){
-        [NSException raise:@"RULE SHOULD NOT BE NIL." format:@"The given rules should not be nil"];
-    }
-    
-    return [[self class] ruleWithChildren:@[rule, otherRule]];
-}
-@end
-
-#pragma mark - Combination
-@implementation zRule(Combination)
--(zRuleOR *)orWithRule:(zRule *)rule{
-    if(nil == rule){
-        [NSException raise:@"GIVEN RULE SHOULD NOT BE NIL." format:@"The given rules should not be nil"];
-    }
-    
-    return [[zRuleOR alloc] initWithChildren:@[self, rule]];
-}
-
--(zRuleAND *)andWithRule:(zRule *)rule{
-    if(nil == rule){
-        [NSException raise:@"GIVEN RULE SHOULD NOT BE NIL." format:@"The given rules should not be nil"];
-    }
-    
-    return [[zRuleAND alloc] initWithChildren:@[self, rule]];
-}
-@end
-
-@implementation zRuleAND(Combination)
-
--(zRule *)andWithRule:(zRule *)rule{
-    if(nil == rule){
-        [NSException raise:@"GIVEN RULE SHOULD NOT BE NIL." format:@"The given rules should not be nil"];
-    }
-    
-    [self addRule:rule];
-    return self;
-}
-
-@end
-
-@implementation zRuleOR(Combination)
-
--(zRule *)orWithRule:(zRule *)rule{
-    if(nil == rule){
-        [NSException raise:@"GIVEN RULE SHOULD NOT BE NIL." format:@"The given rules should not be nil"];
-    }
-    [self addRule:rule];
-    return self;
-}
-
-@end
-
-#pragma mark - Chaining Support
-@implementation zRule(ChainingSupport)
--(zRule *(^)(zComparatorBlock))is{
-    return ^(zComparatorBlock block){
-        return [zRuleWithComparator ruleWithComparator:block];
-    };
-}
-
--(zRule *(^)(zComparatorBlock))not{
-    return ^(zComparatorBlock block){
-        return [zRuleWithComparator ruleWithComparator:^BOOL(id  _Nullable data) {
-            return !block(data);
-        }];
-    };
-}
-@end
-
-@implementation zRuleWithComparator(ChainingSupport)
--(zRuleWithComparator *(^)(zComparatorBlock))is{
-    return ^(zComparatorBlock block){
-        self.comparator = block;
-        return self;
-    };
-}
-
--(zRuleWithComparator *(^)(zComparatorBlock))not{
-    return ^(zComparatorBlock block){
-        self.comparator = ^BOOL(id data){
-            return !block(data);
-        };
-        return self;
-    };
-}
-
-@end
-
-@implementation zComplexRule(ChainingSupport)
--(zComplexRule *(^)(zComparatorBlock))is{
-    return ^(zComparatorBlock block){
+-(id<zRule> (^)(zRuleComparatorBlock))is{
+    return ^(zRuleComparatorBlock block){
         [self addRule:[zRuleWithComparator ruleWithComparator:block]];
         return self;
     };
 }
 
--(zComplexRule *(^)(zComparatorBlock))not{
-    return ^(zComparatorBlock block){
+-(id<zRule> (^)(zRuleComparatorBlock))not{
+    return ^(zRuleComparatorBlock block){
         [self addRule:[zRuleWithComparator ruleWithComparator:^BOOL(id  _Nullable data) {
             return !block(data);
         }]];
@@ -390,4 +349,26 @@
     };
 }
 
++(instancetype)ruleWithChildren:(NSArray<id<zRule>> *)children operation:(id<zComplexRuleOperation>)operation{
+    id<zComplexRule> rule = [[[self class] alloc] initWithChildren:children operation:operation];
+    return rule;
+}
+
+
++(instancetype)ruleLogicANDWithChildren:(NSArray<id<zRule>> *)children{
+    id result = [[self class] ruleWithChildren:children operation:[zComplexRuleOperationLogicAND new]];
+    return result;
+}
++(instancetype)ruleLogicAND{
+    return [[self class] ruleLogicANDWithChildren:@[]];
+}
+
++(instancetype)ruleLogicORWithChildren:(NSArray<id<zRule>> *)children{
+    id result = [[self class] ruleWithChildren:children operation:[zComplexRuleOperationLogicOR new]];
+    return result;
+}
+
++(instancetype)ruleLogicOR{
+    return [[self class] ruleLogicORWithChildren:@[]];
+}
 @end
