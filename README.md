@@ -24,7 +24,7 @@ if([rule validate:@"random string"]){
 
 ### Chaning + Block
 ```Objective-C
-  zRule *rule = [zRuleAND new].is(^BOOL(id data){
+  zRule *rule = [zComplexRule ruleLogicAND].is(^BOOL(id data){
     return [data isKindOfClass:[NSString class]];
   }).is(^BOOL(id data){
     return [data length] > 3;
