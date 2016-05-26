@@ -24,7 +24,8 @@
 
 -(BOOL)validate:(id)data{
     if(![data isKindOfClass:[NSNumber class]]){
-        [NSException raise:@"INAVAILABLE GIVEN DATA" format:@"data[%@] should be member of NSNumber class", data];
+        NSLog(@"GIVEN DATA[%@] IS NOT INSTANCE OF NSNumber", data);
+        return NO;
     }
     
     return [super validate:data];

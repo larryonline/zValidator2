@@ -30,19 +30,8 @@
     zRuleForNSString *ruleAND = [NSString zvAND].notEmpty;
     zRuleForNSString *ruleOR = [NSString zvOR].notEmpty;
     
-    @try{
-        [ruleAND validate:@1];
-        [NSException raise:@"UNACCEPTABLE" format:@"CODE SHOULD NOT GO HERE, BECAUSE VALIDATE WITH NIL COMPARATOR WILL RAISE AN EXCEPTION"];
-    } @catch (NSException *exception) {
-        NSAssert(![@"UNACCEPTABLE" isEqualToString:[exception name]], @"%@", exception);
-    }
-    
-    @try{
-        [ruleOR validate:@1];
-        [NSException raise:@"UNACCEPTABLE" format:@"CODE SHOULD NOT GO HERE, BECAUSE VALIDATE WITH NIL COMPARATOR WILL RAISE AN EXCEPTION"];
-    } @catch (NSException *exception) {
-        NSAssert(![@"UNACCEPTABLE" isEqualToString:[exception name]], @"%@", exception);
-    }
+    NSAssert(![ruleAND validate:@1], @"return NO, because the given data is not instance of NSString");
+    NSAssert(![ruleOR validate:@1], @"return NO, because the given data is not instance of NSString");
     
     
 }
