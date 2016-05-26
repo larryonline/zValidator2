@@ -53,6 +53,8 @@ typedef BOOL (^zRuleComparatorBlock)(_Nullable id data);
 @protocol zRuleWithChainingSupport <NSObject>
 -(id<zRule> _Nonnull(^ _Nonnull)(zRuleComparatorBlock _Nonnull))is;
 -(id<zRule> _Nonnull(^ _Nonnull)(zRuleComparatorBlock _Nonnull))not;
+
+-(id<zComplexRule> _Nonnull(^ _Nonnull)(id<zComplexRule> _Nonnull))appendTo;
 @end
 
 

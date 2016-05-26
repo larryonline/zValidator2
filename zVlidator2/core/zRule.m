@@ -349,6 +349,13 @@ static NSString *makeUUID(){
     };
 }
 
+-(id<zComplexRule> (^)(id<zComplexRule>))appendTo{
+    return ^(id<zComplexRule> complex){
+        [complex addRule:self];
+        return complex;
+    };
+}
+
 +(instancetype)ruleWithChildren:(NSArray<id<zRule>> *)children operation:(id<zComplexRuleOperation>)operation{
     id<zComplexRule> rule = [[[self class] alloc] initWithChildren:children operation:operation];
     return rule;
