@@ -34,6 +34,7 @@
     self.is(^BOOL(id data){
         return [@0 isEqualToNumber:data];
     });
+    [self.children.lastObject setName:@"isZero"];
     return self;
 }
 
@@ -41,6 +42,7 @@
     self.is(^BOOL(id data){
         return ![@0 isEqualToNumber:data];
     });
+    [self.children.lastObject setName:@"notZero"];
     return self;
 }
 
@@ -48,6 +50,8 @@
     self.is(^BOOL(id data){
         return 0 > [data doubleValue];
     });
+    
+    [self.children.lastObject setName:@"isMinus"];
     return self;
 }
 
@@ -55,6 +59,8 @@
     self.is(^BOOL(id data){
         return !(0 > [data doubleValue]);
     });
+    
+    [self.children.lastObject setName:@"notMinus"];
     return self;
 }
 
@@ -62,6 +68,7 @@
     self.is(^BOOL(id data){
         return 0 < [data doubleValue];
     });
+    [self.children.lastObject setName:@"isPlus"];
     return self;
 }
 
@@ -69,6 +76,7 @@
     self.is(^BOOL(id data){
         return !(0 < [data doubleValue]);
     });
+    [self.children.lastObject setName:@"notPlus"];
     return self;
 }
 

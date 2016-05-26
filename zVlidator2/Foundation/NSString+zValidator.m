@@ -32,6 +32,8 @@
     self.is(^BOOL(id data){
         return 0 == [data length];
     });
+    
+    [self.children.lastObject setName:@"isEmpty"];
     return self;
 }
 
@@ -39,6 +41,7 @@
     self.is(^BOOL(id data){
         return 0 < [data length];
     });
+    [self.children.lastObject setName:@"notEmpty"];
     return self;
 }
 
@@ -47,6 +50,8 @@
         self.is(^BOOL(id data){
             return min <= [data length] && max >= [data length];
         });
+        
+        [self.children.lastObject setName:[NSString stringWithFormat:@"inRange(%ld, %ld)", min, max]];
         return self;
     };
 }
@@ -56,6 +61,7 @@
         self.is(^BOOL(id data){
             return !(min <= [data length] && max >= [data length]);
         });
+        [self.children.lastObject setName:[NSString stringWithFormat:@"notInRange(%ld, %ld)", min, max]];
         return self;
     };
 }
@@ -65,6 +71,7 @@
         self.is(^BOOL(id data){
             return [data containsString:content];
         });
+        [self.children.lastObject setName:[NSString stringWithFormat:@"contains(%@)", content]];
         return self;
     };
 }
@@ -74,6 +81,7 @@
         self.is(^BOOL(id data){
             return ![data containsString:content];
         });
+        [self.children.lastObject setName:[NSString stringWithFormat:@"notContains(%@)", content]];
         return self;
     };
 }
@@ -84,6 +92,7 @@
             NSPredicate *pred = [NSPredicate predicateWithFormat:format];
             return [pred evaluateWithObject:data];
         });
+        [self.children.lastObject setName:[NSString stringWithFormat:@"predicate(%@)", format]];
         return self;
     };
 }
@@ -94,13 +103,17 @@
             NSPredicate *pred = [NSPredicate predicateWithFormat:format];
             return ![pred evaluateWithObject:data];
         });
+        
+        [self.children.lastObject setName:[NSString stringWithFormat:@"notPredicate(%@)", format]];
         return self;
     };
 }
 
 -(zRuleForNSString *(^)(NSString *regexp))match{
     return ^(NSString *regexp){
-        return self.predicate([NSString stringWithFormat:@"SELF MATCHES '%@'", regexp]);
+        self.predicate([NSString stringWithFormat:@"SELF MATCHES '%@'", regexp]);
+        return self;
+        
     };
 }
 
