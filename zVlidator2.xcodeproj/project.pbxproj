@@ -20,6 +20,7 @@
 		46C172D51CF4182100083BC4 /* NSString+zValidatorTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 46C172D41CF4182100083BC4 /* NSString+zValidatorTest.m */; };
 		46C6387D1CF4D34F0033D0B0 /* NSNumber+zValidator.m in Sources */ = {isa = PBXBuildFile; fileRef = 46C6387C1CF4D34F0033D0B0 /* NSNumber+zValidator.m */; };
 		46C6387F1CF5736F0033D0B0 /* NSNumber+zValidatorTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 46C6387E1CF5736F0033D0B0 /* NSNumber+zValidatorTest.m */; };
+		46C638831CF6DF290033D0B0 /* NSDate+zValidation.m in Sources */ = {isa = PBXBuildFile; fileRef = 46C638821CF6DF290033D0B0 /* NSDate+zValidation.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,6 +58,8 @@
 		46C6387C1CF4D34F0033D0B0 /* NSNumber+zValidator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSNumber+zValidator.m"; sourceTree = "<group>"; };
 		46C6387E1CF5736F0033D0B0 /* NSNumber+zValidatorTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSNumber+zValidatorTest.m"; sourceTree = "<group>"; };
 		46C638801CF576B50033D0B0 /* Foundation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Foundation.h; path = zVlidator2/Foundation.h; sourceTree = SOURCE_ROOT; };
+		46C638811CF6DF290033D0B0 /* NSDate+zValidation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDate+zValidation.h"; sourceTree = "<group>"; };
+		46C638821CF6DF290033D0B0 /* NSDate+zValidation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDate+zValidation.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -159,6 +162,8 @@
 				46C172CF1CF367E700083BC4 /* NSString+zValidator.m */,
 				46C6387B1CF4D34F0033D0B0 /* NSNumber+zValidator.h */,
 				46C6387C1CF4D34F0033D0B0 /* NSNumber+zValidator.m */,
+				46C638811CF6DF290033D0B0 /* NSDate+zValidation.h */,
+				46C638821CF6DF290033D0B0 /* NSDate+zValidation.m */,
 			);
 			path = Foundation;
 			sourceTree = "<group>";
@@ -264,6 +269,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				46C172BC1CF207FE00083BC4 /* zRule.m in Sources */,
+				46C638831CF6DF290033D0B0 /* NSDate+zValidation.m in Sources */,
 				46C6387D1CF4D34F0033D0B0 /* NSNumber+zValidator.m in Sources */,
 				46C172B71CF2078C00083BC4 /* ViewController.m in Sources */,
 				46C172D01CF367E700083BC4 /* NSString+zValidator.m in Sources */,
