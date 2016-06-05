@@ -81,4 +81,45 @@
     return self;
 }
 
+-(zRuleForNSNumber *(^)(NSNumber *num))eq{
+    return ^(NSNumber *num){
+        self.is(^BOOL(id data){
+            return [num isEqualToNumber:data];
+        });
+        [self.children.lastObject setName:@"equal"];
+        return self;
+    };
+}
+
+
+-(zRuleForNSNumber *(^)(NSNumber *))gt{
+    return ^(NSNumber *num){
+        self.is(^BOOL(id data){
+            return [data doubleValue] > [num doubleValue];
+        });
+        [self.children.lastObject setName:@"gt"];
+        return self;
+    };
+}
+
+-(zRuleForNSNumber *(^)(NSNumber *))lt{
+    return ^(NSNumber *num){
+        self.is(^BOOL(id data){
+            return [data doubleValue] < [num doubleValue];
+        });
+        [self.children.lastObject setName:@"lt"];
+        return self;
+    };
+}
+
+-(zRuleForNSNumber *(^)(NSNumber *min, NSNumber *max))inRange{
+    return ^(NSNumber *min, NSNumber *max){
+        self.is(^BOOL(id data){
+            return [min doubleValue] <= [data doubleValue] && [max doubleValue] >= [data doubleValue];
+        });
+        [self.children.lastObject setName:@"inRange"];
+        return self;
+    };
+}
+
 @end

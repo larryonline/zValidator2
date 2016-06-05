@@ -26,4 +26,11 @@
 
 -(instancetype)isPlus;
 -(instancetype)notPlus;
+
+-(zRuleForNSNumber *(^)(NSNumber *))eq;
+-(zRuleForNSNumber *(^)(NSNumber *))gt;
+-(zRuleForNSNumber *(^)(NSNumber *))lt;
+-(zRuleForNSNumber *(^)(NSNumber *min, NSNumber *max))inRange;
+
+
 @end
