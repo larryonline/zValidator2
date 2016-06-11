@@ -21,4 +21,7 @@
 
 -(instancetype)isYesterday;
 -(instancetype)isTomorrow;
+
+-(zRuleForNSDate *(^)(NSDate *date))before;
+-(zRuleForNSDate *(^)(NSDate *date))after;
 @end

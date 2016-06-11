@@ -56,4 +56,24 @@
     return self;
 }
 
+-(zRuleForNSDate *(^)(NSDate *date))before{
+    return ^(NSDate *date){
+        self.is(^BOOL(id data){
+            return [date earlierDate:data] == date;
+        });
+        [self.children.lastObject setName:[NSString stringWithFormat:@"beforeThan:%@", date]];
+        return self;
+    };
+}
+
+-(zRuleForNSDate *(^)(NSDate *date))after{
+    return ^(NSDate *date){
+        self.is(^BOOL(id data){
+            return [date earlierDate:data] == data;
+        });
+        [self.children.lastObject setName:[NSString stringWithFormat:@"afterThan:%@", date]];
+        return self;
+    };
+}
+
 @end
