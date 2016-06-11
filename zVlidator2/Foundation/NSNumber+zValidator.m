@@ -86,7 +86,7 @@
         self.is(^BOOL(id data){
             return [num isEqualToNumber:data];
         });
-        [self.children.lastObject setName:@"equal"];
+        [self.children.lastObject setName:[NSString stringWithFormat:@"equal(%@)", num]];
         return self;
     };
 }
@@ -97,7 +97,7 @@
         self.is(^BOOL(id data){
             return [data doubleValue] > [num doubleValue];
         });
-        [self.children.lastObject setName:@"gt"];
+        [self.children.lastObject setName:[NSString stringWithFormat:@"gt(%@)", num]];
         return self;
     };
 }
@@ -107,7 +107,7 @@
         self.is(^BOOL(id data){
             return [data doubleValue] < [num doubleValue];
         });
-        [self.children.lastObject setName:@"lt"];
+        [self.children.lastObject setName:[NSString stringWithFormat:@"lt(%@)", num]];
         return self;
     };
 }
@@ -117,7 +117,7 @@
         self.is(^BOOL(id data){
             return [min doubleValue] <= [data doubleValue] && [max doubleValue] >= [data doubleValue];
         });
-        [self.children.lastObject setName:@"inRange"];
+        [self.children.lastObject setName:[NSString stringWithFormat:@"inRange(%@, %@)", min, max]];
         return self;
     };
 }
